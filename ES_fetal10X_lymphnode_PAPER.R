@@ -18,8 +18,9 @@ library(tibble)
 library(apeglm)
 library(glmGamPoi)
 library(abdiv)
-library(DoubletFinder)
+# library(DoubletFinder)
 library(scRepertoire)
+library(stringr)
 
 ### 1. Setting working directory and loading data----------------------------------------------------------------
 setwd("~/PhD/Fetal 10X/sample_filtered_feature_bc_matrix_LN/sample_filtered_feature_bc_matrix")
@@ -68,7 +69,8 @@ rm(FLN_data)
 rm(FLN_ADT)
 
 ### 3. Add info to metadata ----------------------------------------------------------------------------------
-seurat_G <- readRDS("~all_ab_old_harmony_standarized.rds")
+setwd("~/PhD/Fetal 10X/UsedObjects")
+seurat_G <- readRDS("all_ab_old_harmony_standarized.rds")
 
 colnames(seurat_G@meta.data)
 rownames(seurat_G@meta.data)

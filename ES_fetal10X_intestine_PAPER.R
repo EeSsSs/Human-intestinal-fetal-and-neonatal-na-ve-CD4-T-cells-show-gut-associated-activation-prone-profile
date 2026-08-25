@@ -207,7 +207,7 @@ DefaultAssay(FSI) <- 'RNA'
   
   setwd("~/")
   save(FSI_filtered, file = 'FSI_filtered_simple.Robj')
-  save(FSI_CD4, file = 'FSI_CD4subset_wTreg_TCR.Robj')
+  save(FSI_CD4, file = 'FSI_CD4subset_wTreg.Robj')
 
   ## load
   setwd("~/")
@@ -496,194 +496,6 @@ DefaultAssay(FSI) <- 'RNA'
     scale_x_discrete(labels=c('9','2','8','7','0','6','4','5','1','3'))
   dev.off()
 
-  load("C:/Users/elise/Documents/PhD/Fetal 10X/DEG/FSI/listDEG_RNA_FSI_RNA_MAST_0.5.Robj")
-  FSI_filtered <- SetIdent(FSI_filtered, value = "RNA_snn_res.0.5")
-  top15 <- lapply(listDEgenes_i_RNA_MAST_0.5, function(df) {df %>% subset(avg_log2FC>0) %>% top_n(15, avg_log2FC)})
-  top15 <- bind_rows(top15)
-  
-  pdf('FSI_heatmap_res.0.5.pdf', height=40, width=40)
-  DoHeatmap(
-    FSI_filtered,
-    features = top15$gene,
-    cells = NULL,
-    group.by = "RNA_snn_res.0.5",
-    group.bar = TRUE,
-    group.colors = c("#E69F00",'black', 'mistyrose', 'turquoise',"#009E73", 'purple',"#F0E442",'#669999','plum3','red4'),
-    disp.min = -2.5,
-    disp.max = NULL,
-    size = 6,
-    hjust = 0,
-    angle = 0,
-    raster = TRUE,
-    draw.lines = TRUE,
-    lines.width = NULL,
-    group.bar.height = 0.01,
-    combine = TRUE,
-    label=T) & 
-    labs(colour='Cluster identity') &
-    theme(text=element_text(size=28), legend.text = element_text(size=26), 
-          legend.title = element_text(size=28), 
-          plot.margin = margin(20,20,20,20))&
-    scale_color_manual(labels=c('0: CD4 Th1/TRM', '1: CD4 Naive-like/T-CM', 
-                             '2: CD8 Naive-like','3: Treg', 
-                             '4: CD4 Th2/early development', '5: CD4 Activated', '6: CD4 Th17', '7: CD4 - low quality', 
-                             '8: CD8 effector/TRM', '9: Proliferating - S/G2M phase'),
-                       values=c("#E69F00",'black', 'mistyrose', 'turquoise',"#009E73", 'purple',"#F0E442",'#669999','plum3','red4'))
-  dev.off()
-  
-  FSI_filtered_TCR$cloneSize <- as.factor(FSI_filtered_TCR$cloneSize)
-  FSI_filtered_TCR$cloneSize_beta <- as.factor(FSI_filtered_TCR$cloneSize_beta)
-  
-  pdf('FSI_proportionplot_TCR_screp_both_res.0.5.pdf')
-  ggplot(FSI_filtered_TCR@meta.data, aes(x=RNA_snn_res.0.5, fill=cloneSize)) + theme_classic() +
-    geom_bar(position = "fill") + xlab("Cluster ID") + ylab("Fraction") + 
-    labs(fill = "TCRab clone frequency", title='TCRab clonality - Fetal Intestine', subtitle='')+
-    theme(plot.title = element_text(hjust=0.5, size=15), plot.subtitle = element_text(hjust=0.5, vjust=14),
-          axis.title.y = element_text(vjust=2.5),plot.margin = margin(20,20,20,20))+
-    scale_y_continuous(expand = c(0,0))+
-    scale_fill_manual(values=c(palette.colors(palette = "Okabe-Ito")[c(4,6,8,10)]),
-                      labels=c('Small (3-5)', 'Rare (2)', 'Single (1)', 'NA'))
-  dev.off()
-  
-  pdf('FSI_proportionplot_TCR_screp_both_NAremoved_res.0.5.pdf')
-  ggplot(FSI_filtered_TCR@meta.data[!is.na(FSI_filtered_TCR@meta.data$cloneSize),], aes(x=RNA_snn_res.0.5, fill=cloneSize)) + theme_classic() +
-    geom_bar(position = "fill") + xlab("Cluster ID") + ylab("Fraction") + 
-    labs(fill = "TCRab clone frequency", title='TCRab clonality - Fetal Intestine', subtitle='')+
-    theme(plot.title = element_text(hjust=0.5, size=15), plot.subtitle = element_text(hjust=0.5, vjust=14),
-          axis.title.y = element_text(vjust=2.5),plot.margin = margin(20,20,20,20))+
-    scale_y_continuous(expand = c(0,0))+
-    scale_fill_manual(values=c(palette.colors(palette = "Okabe-Ito")[c(4,6,8,10)]),
-                      labels=c('Small (3-5)', 'Rare (2)', 'Single (1)', 'NA'))
-  dev.off()
-  
-  pdf('FSI_countplot_TCR_screp_both_res.0.5.pdf')
-  ggplot(FSI_filtered_TCR@meta.data, aes(x=RNA_snn_res.0.5, fill=cloneSize)) + theme_classic() +
-    geom_bar(position = "stack") + xlab("Cluster ID") + ylab("Fraction") + 
-    labs(fill = "TCRab clone frequency", title='TCRab clonality - Fetal Intestine', subtitle='')+
-    theme(plot.title = element_text(hjust=0.5, size=15), plot.subtitle = element_text(hjust=0.5, vjust=14),
-          axis.title.y = element_text(vjust=2.5),plot.margin = margin(20,20,20,20))+
-    scale_y_continuous(expand = c(0,0))+
-    scale_fill_manual(values=c(palette.colors(palette = "Okabe-Ito")[c(4,6,8,10)]),
-                      labels=c('Small (3-5)', 'Rare (2)', 'Single (1)', 'NA'))
-  dev.off()
-  
-  pdf('FSI_proportionplot_TCR_screp_beta_res.0.5.pdf')
-  ggplot(FSI_filtered_TCR@meta.data, aes(x=RNA_snn_res.0.5, fill=cloneSize_beta)) + theme_classic() +
-    geom_bar(position = "fill") + xlab("Cluster ID") + ylab("Fraction") + 
-    labs(fill = "TCRb clone frequency", title='TCRb clonality - Fetal Intestine', subtitle='')+
-    theme(plot.title = element_text(hjust=0.5, size=15), plot.subtitle = element_text(hjust=0.5, vjust=14),
-          axis.title.y = element_text(vjust=2.5),plot.margin = margin(20,20,20,20))+
-    scale_y_continuous(expand = c(0,0))+
-    scale_fill_manual(values=c(palette.colors(palette = "Okabe-Ito")[c(2,4,6,8,10)]),
-                      labels=c('Medium (6-10)','Small (3-5)', 'Rare (2)', 'Single (1)', 'NA'))
-  dev.off()
-  
-  pdf('FSI_proportionplot_TCR_screp_beta_NAremoved_res.0.5.pdf')
-  ggplot(FSI_filtered_TCR@meta.data[!is.na(FSI_filtered_TCR@meta.data$cloneSize_beta),], 
-         aes(x=RNA_snn_res.0.5, fill=cloneSize_beta)) + theme_classic() +
-    geom_bar(position = "fill") + xlab("Cluster ID") + ylab("Fraction") + 
-    labs(fill = "TCRb clone frequency", title='TCRb clonality - Fetal Intestine', subtitle='')+
-    theme(plot.title = element_text(hjust=0.5, size=15), plot.subtitle = element_text(hjust=0.5, vjust=14),
-          axis.title.y = element_text(vjust=2.5),plot.margin = margin(20,20,20,20))+
-    scale_y_continuous(expand = c(0,0))+
-    scale_fill_manual(values=c(palette.colors(palette = "Okabe-Ito")[c(2,4,6,8,10)]),
-                      labels=c('Medium (6-10)','Small (3-5)', 'Rare (2)', 'Single (1)', 'NA'))
-  dev.off()
-  
-  pdf('FSI_countplot_TCR_screp_beta_res.0.5.pdf')
-  ggplot(FSI_filtered_TCR@meta.data, aes(x=RNA_snn_res.0.5, fill=cloneSize_beta)) + theme_classic() +
-    geom_bar(position = "stack") + xlab("Cluster ID") + ylab("Fraction") + 
-    labs(fill = "TCRb clone frequency", title='TCRb clonality - Fetal Intestine', subtitle='')+
-    theme(plot.title = element_text(hjust=0.5, size=15), plot.subtitle = element_text(hjust=0.5, vjust=14),
-          axis.title.y = element_text(vjust=2.5),plot.margin = margin(20,20,20,20))+
-    scale_y_continuous(expand = c(0,0))+
-    scale_fill_manual(values=c(palette.colors(palette = "Okabe-Ito")[c(2,4,6,8)]),
-                      labels=c('Medium (6-10)','Small (3-5)', 'Rare (2)', 'Single (1)', 'NA'))
-  dev.off()
-  
-  # pdf('FSI_proportionplot_TCR_VDJdiveCustom_res.0.5.pdf')
-  # ggplot(FSI_filtered_TCR@meta.data, aes(x=RNA_snn_res.0.5, fill=cloneSize_vdjd)) + theme_classic() +
-  #   geom_bar(position = "fill") + xlab("Cluster ID") + ylab("Fraction") + 
-  #   labs(fill = "TCR clone frequency", title='TCR clonality - Fetal Intestine', subtitle='')+
-  #   theme(plot.title = element_text(hjust=0.5, size=15), plot.subtitle = element_text(hjust=0.5, vjust=14),
-  #         axis.title.y = element_text(vjust=2.5),plot.margin = margin(20,20,20,20))+
-  #   scale_y_continuous(expand = c(0,0))+
-  #   scale_fill_manual(values=c(palette.colors(palette = "Okabe-Ito")[c(4,6,8,10)]))
-  # dev.off()
-  # 
-  # pdf('FSI_proportionplot_TCR_VDJdiveCustom_NAremoved_res.0.5.pdf')
-  # ggplot(FSI_filtered_TCR@meta.data[!is.na(FSI_filtered_TCR@meta.data$cloneSize_vdjd),], 
-  #        aes(x=RNA_snn_res.0.5, fill=cloneSize_vdjd)) + theme_classic() +
-  #   geom_bar(position = "fill") + xlab("Cluster ID") + ylab("Fraction") + 
-  #   labs(fill = "TCR clone frequency", title='TCR clonality - Fetal Intestine', subtitle='')+
-  #   theme(plot.title = element_text(hjust=0.5, size=15), plot.subtitle = element_text(hjust=0.5, vjust=14),
-  #         axis.title.y = element_text(vjust=2.5),plot.margin = margin(20,20,20,20))+
-  #   scale_y_continuous(expand = c(0,0))+
-  #   scale_fill_manual(values=c(palette.colors(palette = "Okabe-Ito")[c(4,6,8,10)]))
-  # dev.off()
-  # 
-  # pdf('FSI_countplot_TCR_VDJdiveCustom_res.0.5.pdf')
-  # ggplot(FSI_filtered_TCR@meta.data, aes(x=RNA_snn_res.0.5, fill=cloneSize_vdjd)) + theme_classic() +
-  #   geom_bar(position = "stack") + xlab("Cluster ID") + ylab("Fraction") + 
-  #   labs(fill = "TCR clone frequency", title='TCR clonality - Fetal Intestine', subtitle='')+
-  #   theme(plot.title = element_text(hjust=0.5, size=15), plot.subtitle = element_text(hjust=0.5, vjust=14),
-  #         axis.title.y = element_text(vjust=2.5),plot.margin = margin(20,20,20,20))+
-  #   scale_y_continuous(expand = c(0,0))+
-  #   scale_fill_manual(values=c(palette.colors(palette = "Okabe-Ito")[c(4,6,8)]))
-  # dev.off()
-  # 
-  pdf('FSI_clonaloverlap_jaccard_TCR_screp_both_res.0.5.pdf', width=8, height=7)
-  clonalOverlap(FSI_filtered_TCR, cloneCall = 'aa', chain = 'both', method = 'jaccard', group.by = 'RNA_snn_res.0.5') +
-    scale_x_continuous(expand = c(0, 0), breaks = 0:9, labels = 0:9) +
-    scale_y_continuous(expand = c(0, 0), breaks = 0:9, labels = 0:9) + 
-    xlab("Cluster ID") + ylab("Cluster ID") + 
-    labs(fill = "Jaccard index", title='Shared TCRab-clones between clusters - Fetal Intestine', subtitle='')+
-    theme(plot.title = element_text(hjust=0.5, vjust=-1,size=18),
-          axis.title.y = element_text(vjust=3, size=16),axis.title.x = element_text(vjust=.5, size=14),
-          axis.text = element_text(size=14),
-          legend.title = element_text(vjust=2, size=14),legend.text = element_text(size=12),
-          plot.margin = margin(20,20,20,20))
-  dev.off()  
-
-  pdf('FSI_clonaloverlap_jaccard_TCR_screp_beta_res.0.5.pdf', width=8, height=7)
-  clonalOverlap(FSI_filtered_TCR, cloneCall = 'aa', chain = 'TRB', method = 'jaccard', group.by = 'RNA_snn_res.0.5') +
-    scale_x_continuous(expand = c(0, 0), breaks = 0:9, labels = 0:9) +
-    scale_y_continuous(expand = c(0, 0), breaks = 0:9, labels = 0:9) + 
-    xlab("Cluster ID") + ylab("Cluster ID") + 
-    labs(fill = "Jaccard index", title='Shared TCRb-clones between clusters - Fetal Intestine', subtitle='')+
-    theme(plot.title = element_text(hjust=0.5, vjust=-1,size=18),
-          axis.title.y = element_text(vjust=3, size=16),axis.title.x = element_text(vjust=.5, size=14),
-          axis.text = element_text(size=14),
-          legend.title = element_text(vjust=2, size=14),legend.text = element_text(size=12),
-          plot.margin = margin(20,20,20,20))
-  dev.off() 
-  
-  pdf('FSI_clonaloverlap_raw_TCR_screp_both_res.0.5.pdf', width=8, height=7)
-  clonalOverlap(FSI_filtered_TCR, cloneCall = 'aa', chain = 'both', method = 'raw', group.by = 'RNA_snn_res.0.5') +
-    scale_x_continuous(expand = c(0, 0), breaks = 0:9, labels = 0:9) +
-    scale_y_continuous(expand = c(0, 0), breaks = 0:9, labels = 0:9) + 
-    xlab("Cluster ID") + ylab("Cluster ID") + 
-    labs(fill = "Raw count overlap", title='Shared TCRab-clones between clusters - Fetal Intestine', subtitle='')+
-    theme(plot.title = element_text(hjust=0.5, vjust=-1,size=18),
-          axis.title.y = element_text(vjust=3, size=16),axis.title.x = element_text(vjust=.5, size=14),
-          axis.text = element_text(size=14),
-          legend.title = element_text(vjust=2, size=14),legend.text = element_text(size=12),
-          plot.margin = margin(20,20,20,20))
-  dev.off() 
-  
-  pdf('FSI_clonaloverlap_raw_TCR_screp_beta_res.0.5.pdf', width=8, height=7)
-  clonalOverlap(FSI_filtered_TCR, cloneCall = 'aa', chain = 'TRB', method = 'raw', group.by = 'RNA_snn_res.0.5') +
-    scale_x_continuous(expand = c(0, 0), breaks = 0:9, labels = 0:9) +
-    scale_y_continuous(expand = c(0, 0), breaks = 0:9, labels = 0:9) + 
-    xlab("Cluster ID") + ylab("Cluster ID") + 
-    labs(fill = "Raw count overlap", title='Shared TCRb-clones between clusters - Fetal Intestine', subtitle='')+
-    theme(plot.title = element_text(hjust=0.5, vjust=-1,size=18),
-          axis.title.y = element_text(vjust=3, size=16),axis.title.x = element_text(vjust=.5, size=14),
-          axis.text = element_text(size=14),
-          legend.title = element_text(vjust=2, size=14),legend.text = element_text(size=12),
-          plot.margin = margin(20,20,20,20))
-  dev.off() 
-  
 ### 9. DEG -----------------------------------------------------------------------------------------------------------
   #### ROC/MAST for cluster defining markers ####
   DefaultAssay(object = FSI_filtered) <- "RNA"
@@ -741,6 +553,19 @@ FeaturePlot(FSI_CD4, 'CD8a',reduction='umap', pt.size=.2)
 FeaturePlot(FSI_CD4, 'CD45RA',reduction='umap', pt.size=1)
 FeaturePlot(FSI_CD4, 'CD27.1',reduction='umap', pt.size=.2)
 DimPlot(FSI_CD4, reduction='umap', group.by = 'Phase')
+
+
+#### Save and load -----------------------------------------------------------------------------------------------------------
+
+setwd("~/")
+save(FSI_filtered, file = 'FSI_filtered_simple.Robj')
+save(FSI_CD4, file = 'FSI_CD4subset_wTreg.Robj')
+
+## load
+setwd("~/")
+load('FSI_filtered_simple.Robj')
+load('FSI_CD4subset_wTreg.Robj')
+
 
 #### 10. CD4 - Figures ####
 setwd("")

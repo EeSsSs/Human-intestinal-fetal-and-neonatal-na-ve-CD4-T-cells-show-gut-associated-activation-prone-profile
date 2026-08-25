@@ -531,7 +531,7 @@ DefaultAssay(FSP) <- 'RNA'
   write.xlsx(listDEgenes_i_RNA_MAST_0.4, file='SupplData2_listDEG_fetal_FSP_scRNA_0.4.xlsx')
   detach("package:openxlsx", unload=TRUE)
 
-  #### 10.2  subset naive and memory CD4 T cells - with Treg ----------------------------------------------------------------------------------
+  #### 10  subset naive and memory CD4 T cells - with Treg ----------------------------------------------------------------------------------
   FSP_filtered<- SetIdent(FSP_filtered, value = "RNA_snn_res.0.4")
   FSP_CD4 <- subset(FSP_filtered,  idents= c('1','2','4','6','7'), subset=CD8_ADT<1&CD4_ADT>1)
   rm(FSP_filtered)
@@ -556,6 +556,18 @@ DefaultAssay(FSP) <- 'RNA'
   FeaturePlot(FSP_CD4, 'CD45RA',reduction='umap', pt.size=1)
   FeaturePlot(FSP_CD4, 'CD27.1',reduction='umap', pt.size=.2)
   DimPlot(FSP_CD4, reduction='umap', group.by = 'Phase', pt.size=1)
+  
+  #### Save and load -----------------------------------------------------------------------------------------------------------
+  
+  setwd("~/PhD/Fetal 10X/UsedObjects")
+  save(FSP_filtered, file = 'FSP_filtered_simple.Robj')
+  save(FSP_CD4, file = 'FSP_CD4subset_wTreg.Robj')
+  
+  ## load
+  setwd("~/PhD/Fetal 10X/UsedObjects")
+  load('FSP_filtered_simple.Robj')
+  load('FSP_CD4subset_wTreg.Robj')
+  
   
   #### 10. CD4 - Figures ####
   setwd("")
